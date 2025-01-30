@@ -10,8 +10,10 @@ type Config struct {
 }
 
 type RedisConfigs struct {
-	Addresses                 []string `mapstructure:"addresses"`
-	MasterName                string   `mapstructure:"master_name"`
-	ConnectionPoolMaxIdleTime int      `mapstructure:"connection_pool_max_idle_time"`
-	ReadTimeout               int      `mapstructure:"read_timeout"`
+	Address      string `mapstructure:"address"`
+	DialTimeout  int    `mapstructure:"dial_timeout"`
+	ReadTimeout  int    `mapstructure:"read_timeout"`
+	WriteTimeout int    `mapstructure:"write_timeout"`
+	PoolSize     int    `mapstructure:"pool_size"`
+	MaxIdleTime  int    `mapstructure:"max_idle_time"`
 }

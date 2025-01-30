@@ -1,20 +1,27 @@
 package internal
 
 import (
-	"log"
+	"context"
+	"fmt"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 type RateLimiter struct {
-	configs []RateLimitConfig
+	configs     []RateLimitConfig
+	redisClient *redis.Client
 }
 
-func NewRateLimiter(configs []RateLimitConfig) *RateLimiter {
+func NewRateLimiter(configs []RateLimitConfig, client *redis.Client) *RateLimiter {
 	for i := range configs {
 		configs[i].Regex = regexp.MustCompile(configs[i].Pattern)
 	}
-	return &RateLimiter{configs: configs}
+	return &RateLimiter{
+		configs:     configs,
+		redisClient: client,
+	}
 }
 
 func (r *RateLimiter) HttpMiddleware(next http.Handler) http.Handler {
@@ -38,8 +45,22 @@ func (r *RateLimiter) HttpMiddleware(next http.Handler) http.Handler {
 }
 
 func (r *RateLimiter) allowRequest(userKey string, config *RateLimitConfig) bool {
-	log.Println("userKey:", userKey, "config:", *config, "was accepted")
-	return true
+	now := time.Now().Unix()
+	window := now / int64(time.Duration(config.Duration)*time.Second)
+
+	redisKey := fmt.Sprintf("%s:%d", userKey, window)
+
+	count, err := r.redisClient.Incr(context.Background(), redisKey).Result()
+	if err != nil {
+		return false
+	}
+
+	if count == 1 {
+		r.redisClient.Expire(context.Background(), redisKey, time.Duration(config.Duration)*time.Second)
+	}
+
+	println("cnt: ", count)
+	return count <= int64(config.Limit)
 }
 
 func (r *RateLimiter) matchConfig(path string) (*RateLimitConfig, bool) {

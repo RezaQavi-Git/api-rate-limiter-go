@@ -1,14 +1,16 @@
 
 redis_configs:
+  address: "localhost:6379"
+  dial_timeout: 10
   read_timeout: 10
-  connection_pool_max_idle_time: 300
-  addresses:
-    - "redis:6379"
+  write_timeout: 10
+  pool_size: 100
+  max_idle_time: 300
 
 rate_limit_configs:
   - pattern: "^/api/v2/.*"
-    limit: 10
+    limit: 2
     duration: 60
   - pattern: "^/api/v3/.*"
-    limit: 10
+    limit: 1
     duration: 60
