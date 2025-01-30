@@ -59,7 +59,6 @@ func (r *RateLimiter) allowRequest(userKey string, config *RateLimitConfig) bool
 		r.redisClient.Expire(context.Background(), redisKey, time.Duration(config.Duration)*time.Second)
 	}
 
-	println("cnt: ", count)
 	return count <= int64(config.Limit)
 }
 
