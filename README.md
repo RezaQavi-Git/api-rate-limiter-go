@@ -1,1 +1,1 @@
-# api-rate-limiter-go
+# Api Rate Limiter Go
