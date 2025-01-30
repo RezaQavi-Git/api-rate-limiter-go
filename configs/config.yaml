@@ -1,0 +1,14 @@
+
+redis_configs:
+  read_timeout: 10
+  connection_pool_max_idle_time: 300
+  addresses:
+    - "redis:6379"
+
+rate_limit_configs:
+  - pattern: "^/api/v2/.*"
+    limit: 10
+    duration: 60
+  - pattern: "^/api/v3/.*"
+    limit: 10
+    duration: 60
