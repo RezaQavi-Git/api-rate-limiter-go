@@ -1,22 +1,16 @@
 package main
 
 import (
+	"api-rate-limiter-go/configs"
 	"api-rate-limiter-go/internal"
 	"net/http"
-	"time"
 )
 
 func main() {
 	println("Rate Limiter Application Started...")
-	configs := []internal.RateLimitConfig{
-		{
-			Pattern:  `^/api/.*`,
-			Limit:    5,
-			Duration: 10 * time.Second,
-		},
-	}
+	appConfig := configs.Load()
 
-	rateLimiter := internal.NewRateLimiter(configs)
+	rateLimiter := internal.NewRateLimiter(appConfig.RateLimitConfigs)
 	http.Handle("/api/", rateLimiter.HttpMiddleware(http.HandlerFunc(handleAPI)))
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

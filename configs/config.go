@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func LoadConfig() *Config {
+func Load() *Config {
 	var configFilePath = GetOsEnv("CONFIG_FILE_PATH", "configs/")
 	var configFileName = GetOsEnv("CONFIG_FILE_NAME", "config")
 
