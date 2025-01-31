@@ -27,12 +27,14 @@ Similar to the token bucket, but with a key difference: requests are added to a 
 ## Components
 1. `RateLimiter`: Base component of application, include `HttpMiddleware`, get incoming request, extract data, check limit and deny or accept request.
 2. `RateLimitConfig`: you can define a config with below schema, and this config will apply over all api calls.
-   ```json 
-   {
-    "pattern": String,
-    "limit": Int,
-    "duration": Int,
-   }
+   ```yaml
+   rate_limit_configs:
+   - pattern: "^/api/v2/.*"
+     limit: 2
+     duration: 60
+   - pattern: "^/api/v3/.*"
+     limit: 1
+     duration: 60
 
 ## How to Use
 To use this minimal api rate limiter, you need to set up a redis client and also pass `RateLimitConfig` list to `NewRateLimiter` method, and then you can use middleware anywhere in code.
