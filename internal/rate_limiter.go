@@ -48,7 +48,7 @@ func (r *RateLimiter) allowRequest(userKey string, config *RateLimitConfig) bool
 	now := time.Now().Unix()
 	window := now / int64(time.Duration(config.Duration)*time.Second)
 
-	redisKey := fmt.Sprintf("%s:%d", userKey, window)
+	redisKey := fmt.Sprintf("%s:%s:%d", userKey, config.Pattern, window)
 
 	count, err := r.redisClient.Incr(context.Background(), redisKey).Result()
 	if err != nil {
